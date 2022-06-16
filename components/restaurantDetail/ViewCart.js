@@ -1,11 +1,20 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Modal, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, Modal, StyleSheet, SafeAreaView } from "react-native";
 import { useSelector } from "react-redux";
 import OrderItem from "./OrderItem";
 import firebase from "../../firebase";
 import LottieView from "lottie-react-native";
+import { NavigationContainer, StackActions } from '@react-navigation/native';
 
-export default function ViewCart({ navigation }) {
+import auth from '@react-native-firebase/auth';
+
+
+
+
+export default function ViewCart({ navigation, route }) {
+
+  
+
   const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -22,15 +31,16 @@ export default function ViewCart({ navigation }) {
     currency: "PHP",
   });
 
+  const [newData, setData] = useState({});
+  
   const addOrderToFireBase = () => {
     setLoading(true);
+
+    const user = firebase.auth().currentUser;
     const db = firebase.firestore();
+
     db.collection("orders")
-      .add({
-        items: items,
-        restaurantName: restaurantName,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      })
+      .add(newData)
       .then(() => {
         setTimeout(() => {
           setLoading(false);
@@ -38,6 +48,8 @@ export default function ViewCart({ navigation }) {
         }, 2500);
       });
   };
+
+  
 
   const styles = StyleSheet.create({
     modalContainer: {
@@ -99,8 +111,33 @@ export default function ViewCart({ navigation }) {
                   position: "relative",
                 }}
                 onPress={() => {
-                  addOrderToFireBase();
+
+                  let thisData = {
+                    items: items,
+                    restaurantName: restaurantName,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()                    
+                  };
+
+                  if(firebase.auth().currentUser != null){
+                    thisData['email'] = firebase.auth().currentUser.email;
+                  }
+
                   setModalVisible(false);
+                  setData(thisData);
+
+
+
+                  if(firebase.auth().currentUser == null){                    
+
+                    //navigation.navigate("LoginScreen", {data:newData});
+                    const pushAction = StackActions.push('LoginScreen', {data:thisData});
+                    navigation.dispatch(pushAction);
+                  }
+                  else{
+                    addOrderToFireBase();                    
+                  }
+
+                  
                 }}
               >
                 <Text style={{ color: "white", fontSize: 20 }}>Checkout</Text>
@@ -119,6 +156,7 @@ export default function ViewCart({ navigation }) {
             </View>
           </View>
         </View>
+        
       </>
     );
   };
@@ -141,7 +179,10 @@ export default function ViewCart({ navigation }) {
             justifyContent: "center",
             flexDirection: "row",
             position: "absolute",
-            bottom: 130,
+            //bottom: 130,
+            flex: 1,
+            justifyContent: 'flex-end',
+
             zIndex: 999,
           }}
         >

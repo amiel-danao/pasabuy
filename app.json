@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "pasabuy",
+    "slug": "pasabuy",
+    "version": "1.0.0",
+    "sdkVersion": "45.0.0",
+    "platforms": [
+      "android"
+    ],
+    "android": {
+      "package": "com.thesis.pasabuy",
+      "googleServicesFile": "google-services.json"
+    },
+    "plugins": ["@react-native-google-signin/google-signin"]
+  }
+}

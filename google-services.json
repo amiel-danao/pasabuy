@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "631663355432",
+    "project_id": "pasabuy-8d8bf",
+    "storage_bucket": "pasabuy-8d8bf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:631663355432:android:0b6f72795e8a2adc0ab71d",
+        "android_client_info": {
+          "package_name": "com.thesis.pasabuy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "631663355432-tj62hogjk4r59um8c4kic3pr3sam60al.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.thesis.pasabuy",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "631663355432-jkbdlj9gqndpj3nvlg9gg1iqi4hckiis.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJWZ1paWSX43S7VRLCPkshi3p8WJpN09o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "631663355432-jkbdlj9gqndpj3nvlg9gg1iqi4hckiis.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

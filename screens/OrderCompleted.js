@@ -5,7 +5,33 @@ import LottieView from "lottie-react-native";
 import firebase from "../firebase";
 import MenuItems from "../components/restaurantDetail/MenuItems";
 
-export default function OrderCompleted() {
+import { useIsFocused } from '@react-navigation/native';
+
+export default function OrderCompleted({ navigation, route }) {
+
+  const isFocused = useIsFocused();
+
+  React.useEffect(()=>{
+  if(isFocused){
+    console.log("Yeeeeha");
+    // callback
+    if(route != undefined){
+      
+      if(route.params != undefined){
+        console.log(route.params.data);
+        const db = firebase.firestore();
+
+        db.collection("orders")
+          .add(route.params.data)
+          .then(() => {
+            console.log("saved order from ");
+          });
+      }
+    }
+  }
+  },[isFocused])
+
+
   const [lastOrder, setLastOrder] = useState({
     items: [
       {
