@@ -4,8 +4,9 @@ import { useSelector } from "react-redux";
 import LottieView from "lottie-react-native";
 import firebase from "../firebase";
 import MenuItems from "../components/restaurantDetail/MenuItems";
-
+import { incrementPendingOrders } from '../components/restaurantDetail/ViewCart'
 import { useIsFocused } from '@react-navigation/native';
+import {getFirestore, getDoc, doc, setDoc, increment } from "firebase/firestore";
 
 export default function OrderCompleted({ navigation, route }) {
 
@@ -24,6 +25,7 @@ export default function OrderCompleted({ navigation, route }) {
         db.collection("orders")
           .add(route.params.data)
           .then(() => {
+            incrementPendingOrders(1);
             console.log("saved order from ");
           });
       }
@@ -31,6 +33,44 @@ export default function OrderCompleted({ navigation, route }) {
   }
   },[isFocused])
 
+
+  function incrementPendingOrders(increase){
+    console.log("start increment");
+    var db = firebase.firestore();
+    // const ref = firebase.firestore().doc(db, "settings", "counters");
+    
+    var docRef = db.collection("settings").doc("counters");
+    
+    //const docRef = firebase.firestore().doc(db, "settings","counters");
+
+    // docRef.update({
+    //   pendingOrders: pendingOrdersCount + increase
+    // });
+
+    //var docRef = db.collection("settings").doc("counters");
+
+    docRef.get().then((doc) => {
+        if (doc.exists) {
+          console.log("Document data:", doc.data());
+          let pendingOrdersCount = 0;
+          if("pendingOrders" in doc.data()){
+            pendingOrdersCount = doc.data()["pendingOrders"];
+          }
+          
+          docRef.update({
+            pendingOrders: pendingOrdersCount + increase
+          });
+    
+          console.log("incremented pendingOrders");
+        } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+        }
+    }).catch((error) => {
+        console.log("Error getting document:", error);
+    });
+    
+  }
 
   const [lastOrder, setLastOrder] = useState({
     items: [

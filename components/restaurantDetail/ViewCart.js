@@ -5,14 +5,12 @@ import OrderItem from "./OrderItem";
 import firebase from "../../firebase";
 import LottieView from "lottie-react-native";
 import { NavigationContainer, StackActions } from '@react-navigation/native';
-
 import auth from '@react-native-firebase/auth';
+//import { getDoc, doc, updateDoc, increment } from "@react-native-firebase/firestore";
+import firestore from 'firebase/firestore';
 
 
-
-
-export default function ViewCart({ navigation, route }) {
-
+export default function ViewCart({ navigation}) {
   
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -38,10 +36,13 @@ export default function ViewCart({ navigation, route }) {
 
     const user = firebase.auth().currentUser;
     const db = firebase.firestore();
-
+    
     db.collection("orders")
       .add(newData)
       .then(() => {
+
+        incrementPendingOrders(1);
+
         setTimeout(() => {
           setLoading(false);
           navigation.navigate("OrderCompleted");
@@ -49,7 +50,43 @@ export default function ViewCart({ navigation, route }) {
       });
   };
 
-  
+  function incrementPendingOrders(increase){
+    console.log("start increment");
+    var db = firebase.firestore();
+    // const ref = firebase.firestore().doc(db, "settings", "counters");
+    
+    var docRef = db.collection("settings").doc("counters");
+    
+    //const docRef = firebase.firestore().doc(db, "settings","counters");
+
+    // docRef.update({
+    //   pendingOrders: pendingOrdersCount + increase
+    // });
+
+    //var docRef = db.collection("settings").doc("counters");
+
+    docRef.get().then((doc) => {
+        if (doc.exists) {
+          console.log("Document data:", doc.data());
+          let pendingOrdersCount = 0;
+          if("pendingOrders" in doc.data()){
+            pendingOrdersCount = doc.data()["pendingOrders"];
+          }
+          
+          docRef.update({
+            pendingOrders: pendingOrdersCount + increase
+          });
+    
+          console.log("incremented pendingOrders");
+        } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+        }
+    }).catch((error) => {
+        console.log("Error getting document:", error);
+    });
+    
+  }
 
   const styles = StyleSheet.create({
     modalContainer: {
@@ -115,7 +152,8 @@ export default function ViewCart({ navigation, route }) {
                   let thisData = {
                     items: items,
                     restaurantName: restaurantName,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()                    
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    state:0
                   };
 
                   if(firebase.auth().currentUser != null){
